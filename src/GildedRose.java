@@ -21,45 +21,24 @@ public class GildedRose {
     }
 
 
-    // Funções auxiliares para verificação de tipos de itens (começo)
-
-    private boolean isSulfuras(Item item) {
-        return item.name.equals("Sulfuras, Hand of Ragnaros");
-    }
-
-    private boolean isAgedBrie(Item item) {
-        return item.name.equals("Aged Brie");
-    }
-
-    private boolean isBackstagePass(Item item) {
-        return item.name.equals("Backstage passes to a TAFKAL80ETC concert");
-    }
-
-    private boolean isConjured(Item item) {
-        return item.name.equals("Conjured Mana Cake");
-    }
-
-    private boolean isEternalArtifact(Item item) {
-        return item.name.equals("Eternal Artifact");
-    }
-
-    private boolean containsPerishable(Item item) {
-        return item.name.contains("Perishable");    // Nesse método eu utilizei contains invés de equals, porque é a forma como aparece no código
-    }
-
-    // Funções auxiliares para verificação de tipos de itens (fim)
-
     public void updateQuality() {
         for (int i = 0; i < items.length; i++) {
-            if (!isAgedBrie(items[i])
-                    && !isBackstagePass(items[i])
-                    && !isConjured(items[i])
-                    && !isEternalArtifact(items[i])) {
+
+            // Variáveis de guarda (início)
+            boolean isSulfuras = items[i].name.equals("Sulfuras, Hand of Ragnaros");
+            boolean isAgedBrie = items[i].name.equals("Aged Brie");
+            boolean isBackstage = items[i].name.equals("Backstage passes to a TAFKAL80ETC concert");
+            boolean isConjured = items[i].name.equals("Conjured Mana Cake");
+            boolean isEternal = items[i].name.equals("Eternal Artifact");
+            boolean isPerishable = items[i].name.contains("Perishable");
+            // Variáveis de guarda (fim)
+
+            if (!isAgedBrie && !isBackstage && !isConjured && !isEternal) {
                 if (items[i].quality > 0) {
-                    if (!isSulfuras(items[i])) {
+                    if (!isSulfuras) {
                         decreaseQuality(items[i], 1);
                         // Additional degradation for perishable items
-                        if (containsPerishable(items[i])) {
+                        if (isPerishable) {
                             decreaseQuality(items[i], 1);
                         }
                     }
@@ -67,7 +46,7 @@ public class GildedRose {
             } else {
                 if (items[i].quality < 50) {
                     increaseQuality(items[i], 1);
-                    if (isBackstagePass(items[i])) {
+                    if (isBackstage) {
                         if (items[i].sellIn < 11) {
                             if (items[i].quality < 50) {
                                 increaseQuality(items[i], 1);
@@ -78,10 +57,10 @@ public class GildedRose {
                                 increaseQuality(items[i], 1);
                             }
                         }
-                    } else if (isConjured(items[i])) {
+                    } else if (isConjured) {
                         // Conjured items degrade twice as fast
                         increaseQuality(items[i], 1); // But for quality increase? Wait, adjust logic
-                    } else if (isEternalArtifact(items[i])) {
+                    } else if (isEternal) {
                         // Increases quality over time, but slowly
                         if (items[i].sellIn % 2 == 0) {
                             increaseQuality(items[i], 1);
@@ -90,21 +69,21 @@ public class GildedRose {
                 }
             }
 
-            if (!isSulfuras(items[i]) && !isEternalArtifact(items[i])) {
+            if (!isSulfuras && !isEternal) {
                 items[i].sellIn = items[i].sellIn - 1;
             }
 
             if (items[i].sellIn < 0) {
-                if (!isAgedBrie(items[i])) {
-                    if (!isBackstagePass(items[i])) {
+                if (!isAgedBrie) {
+                    if (!isBackstage) {
                         if (items[i].quality > 0) {
-                            if (!isSulfuras(items[i])) {
+                            if (!isSulfuras) {
                                 decreaseQuality(items[i], 1);
-                                if (isConjured(items[i])) {
+                                if (isConjured) {
                                     decreaseQuality(items[i], 1); // Extra degradation
                                 }
                                 // Handle perishable post-sellIn
-                                if (containsPerishable(items[i])) {
+                                if (isPerishable) {
                                     decreaseQuality(items[i], 2);
                                 }
                             }
@@ -118,13 +97,13 @@ public class GildedRose {
                     }
                 }
                 // Additional logic for eternal items after sellIn (though sellIn doesn't change)
-                if (isEternalArtifact(items[i]) && items[i].quality < 50) {
+                if (isEternal && items[i].quality < 50) {
                     increaseQuality(items[i], 1);
                 }
             }
 
             // Ensure quality bounds
-            if (items[i].quality > 50 && !isSulfuras(items[i])) {
+            if (items[i].quality > 50 && !isSulfuras) {
                 items[i].quality = 50;
             }
             if (items[i].quality < 0) {
